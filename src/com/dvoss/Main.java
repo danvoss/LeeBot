@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws TwitterException {
 
         Twitter twitter = new TwitterFactory().getSingleton();
-        Status status = twitter.updateStatus("another try.");
+        Status status = twitter.updateStatus("i tweet robotic-lee.");
         System.out.println("Tweeted successful-lee.");
     }
 }
