@@ -11,14 +11,16 @@ public class Main {
 
         Twitter twitter = new TwitterFactory().getSingleton();
 
-        /* first test-drive:
-        * */
+        /*
+         * first test-drive:
+         */
 
 //        Status status = twitter.updateStatus("i tweet robotic-lee.");
 //        System.out.println("Tweeted successful-lee.");
 
-        /* run script to search for latest tweets and retweet:
-        * */
+        /*
+         * to search for latest tweets and retweet:
+         */
 
         Query query = new Query("lee konitz");
         query.setResultType(Query.ResultType.recent);
@@ -29,9 +31,19 @@ public class Main {
 
         for (int i = (resultList.size() - 1); i >=0; i--) {
             Status status = resultList.get(i);
-//            twitter.retweetStatus(status.getId());
-            System.out.println(status.getText());
-            Thread.sleep(60 * 1000);
+            try {
+                twitter.retweetStatus(status.getId());
+                System.out.println(status.getText());
+                Thread.sleep(60 * 1000);
+            }
+            catch (TwitterException e) {
+                if (e.getStatusCode() == 403) {
+                    System.out.println("You've already retweeted this status: " + status.getId());
+                }
+                else {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
