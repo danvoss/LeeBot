@@ -40,6 +40,8 @@ public class Main {
          * to search for latest tweets and retweet:
          */
 
+        final long LEEBOT_ID = twitter.showUser("lee_konitz_bot").getId();
+
         Query query = new Query("lee konitz");
         query.setResultType(Query.ResultType.recent);
         query.setCount(27);
@@ -49,9 +51,21 @@ public class Main {
 
         for (int i = (resultList.size() - 1); i >=0; i--) {
             Status status = resultList.get(i);
+            User u = status.getUser();
+            Relationship r = twitter.showFriendship(LEEBOT_ID, u.getId());
             try {
                 twitter.retweetStatus(status.getId());
                 System.out.println(status.getText());
+
+                if (!r.isSourceFollowingTarget()) {
+                    try {
+                        twitter.createFriendship(u.getId());
+                        System.out.println("Now following " + u.getName());
+                    }
+                    catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Thread.sleep(60 * 1000);
             }
             catch (TwitterException e) {
