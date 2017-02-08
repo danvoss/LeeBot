@@ -7,24 +7,6 @@ import java.util.List;
 
 public class Main {
 
-    private static void followBack(Twitter twitter) throws TwitterException {
-
-        IDs followers = twitter.getFollowersIDs("lee_konitz_bot", -1);
-        long[] followerIDs = followers.getIDs();
-        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(followerIDs);
-        for (Friendship f : friendshipResponseList) {
-            if (!f.isFollowing()) {
-                try {
-                    twitter.createFriendship(f.getId());
-                    System.out.println("Now following back " + f.getName());
-                }
-                catch (TwitterException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public static void main(String[] args) throws TwitterException, InterruptedException {
 
         Twitter twitter = new TwitterFactory().getSingleton();
@@ -81,5 +63,23 @@ public class Main {
         followBack(twitter);
 
         System.out.println("Finished.");
+    }
+
+    private static void followBack(Twitter twitter) throws TwitterException {
+
+        IDs followers = twitter.getFollowersIDs("lee_konitz_bot", -1);
+        long[] followerIDs = followers.getIDs();
+        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(followerIDs);
+        for (Friendship f : friendshipResponseList) {
+            if (!f.isFollowing()) {
+                try {
+                    twitter.createFriendship(f.getId());
+                    System.out.println("Now following back " + f.getName());
+                }
+                catch (TwitterException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
