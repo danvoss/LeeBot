@@ -26,7 +26,7 @@ public class Main {
 
         Query query = new Query("lee konitz");
         query.setResultType(Query.ResultType.recent);
-        query.setCount(27);
+        query.setCount(12);
         List<Status> resultList = new ArrayList<>();
         QueryResult result = twitter.search(query);
         resultList.addAll(result.getTweets());
@@ -48,7 +48,7 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
-                Thread.sleep(60 * 1000);
+                Thread.sleep(2 * 60 * 1000);
             }
             catch (TwitterException e) {
                 if (e.getStatusCode() == 403) {
