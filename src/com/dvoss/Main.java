@@ -39,15 +39,17 @@ public class Main {
                 twitter.retweetStatus(status.getId());
                 System.out.println(status.getText());
 
-                if (!r.isSourceFollowingTarget()) {
-                    try {
-                        twitter.createFriendship(u.getId());
-                        System.out.println("Now following " + u.getName());
-                    }
-                    catch (TwitterException e) {
-                        e.printStackTrace();
-                    }
-                }
+                // disable the following to avoid twitter exception 403, code=18
+
+//                if (!r.isSourceFollowingTarget()) {
+//                    try {
+//                        twitter.createFriendship(u.getId());
+//                        System.out.println("Now following " + u.getName());
+//                    }
+//                    catch (TwitterException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 Thread.sleep(2 * 60 * 1000);
             }
             catch (TwitterException e) {
