@@ -11,16 +11,12 @@ public class Main {
 
         Twitter twitter = new TwitterFactory().getSingleton();
 
-        /*
-         * first test-drive:
-         */
-
+        // first test-drive:
+        
 //        Status status = twitter.updateStatus("i tweet robotic-lee.");
 //        System.out.println("Tweeted successful-lee.");
 
-        /*
-         * to search for latest tweets and retweet:
-         */
+        // to search for latest tweets and retweet:
 
         final long LEEBOT_ID = twitter.showUser("lee_konitz_bot").getId();
 
@@ -69,19 +65,42 @@ public class Main {
 
     private static void followBack(Twitter twitter) throws TwitterException {
 
-        IDs followers = twitter.getFollowersIDs("lee_konitz_bot", -1);
-        long[] followerIDs = followers.getIDs();
-        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(followerIDs);
-        for (Friendship f : friendshipResponseList) {
-            if (!f.isFollowing()) {
+        PagableResponseList<User> listOfFollowers = twitter.getFollowersList("lee_konitz_bot", -1);
+        String[] arrayOfFollowers = new String[listOfFollowers.size()];
+
+        int count=0;
+        for (User user : listOfFollowers) {
+            arrayOfFollowers[count] = user.getScreenName();
+            count++;
+        }
+        ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFollowers);
+
+        for (Friendship friendship : listOfFriendships) {
+            if (!friendship.isFollowing()) {
                 try {
-                    twitter.createFriendship(f.getId());
-                    System.out.println("Now following back " + f.getName());
+                    twitter.createFriendship(friendship.getId());
+                    System.out.println("Now following back " + friendship.getName());
                 }
-                catch (TwitterException e){
+                catch (TwitterException e) {
                     e.printStackTrace();
                 }
             }
         }
+        System.out.println("Done following back.");
+
+//        IDs followers = twitter.getFollowersIDs("lee_konitz_bot", -1);
+//        long[] followerIDs = followers.getIDs();
+//        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(followerIDs);
+//        for (Friendship f : friendshipResponseList) {
+//            if (!f.isFollowing()) {
+//                try {
+//                    twitter.createFriendship(f.getId());
+//                    System.out.println("Now following back " + f.getName());
+//                }
+//                catch (TwitterException e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 }
