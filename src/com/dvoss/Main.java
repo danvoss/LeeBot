@@ -65,6 +65,9 @@ public class Main {
 
     private static void followBack(Twitter twitter) throws TwitterException {
 
+        // Replace commented-out code below with the following. Use pagable response list of followers instead of IDs to
+        // avoid query limit exception.
+
         PagableResponseList<User> listOfFollowers = twitter.getFollowersList("lee_konitz_bot", -1);
         String[] arrayOfFollowers = new String[listOfFollowers.size()];
 
