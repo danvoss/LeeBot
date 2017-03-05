@@ -1,4 +1,4 @@
-package com.dvoss;
+package io.github.danvoss;
 
 import twitter4j.*;
 
@@ -11,12 +11,13 @@ public class Main {
 
         Twitter twitter = new TwitterFactory().getSingleton();
 
-        // first test-drive:
+        // First test-drive:
         
 //        Status status = twitter.updateStatus("i tweet robotic-lee.");
 //        System.out.println("Tweeted successful-lee.");
 
-        // to search for latest tweets and retweet:
+
+        // To search for latest tweets and retweet:
 
         final long LEEBOT_ID = twitter.showUser("lee_konitz_bot").getId();
 
@@ -35,7 +36,7 @@ public class Main {
                 twitter.retweetStatus(status.getId());
                 System.out.println(status.getText());
 
-                // disable the following to avoid twitter exception 403, code=18
+                // Disable the code below to avoid excessive following
 
 //                if (!r.isSourceFollowingTarget()) {
 //                    try {
