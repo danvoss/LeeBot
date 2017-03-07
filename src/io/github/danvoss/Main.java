@@ -12,13 +12,11 @@ public class Main {
         Twitter twitter = new TwitterFactory().getSingleton();
 
         // First test-drive:
-        
 //        Status status = twitter.updateStatus("i tweet robotic-lee.");
 //        System.out.println("Tweeted successful-lee.");
 
 
         // To search for latest tweets and retweet:
-
         final long LEEBOT_ID = twitter.showUser("lee_konitz_bot").getId();
 
         Query query = new Query("lee konitz");
@@ -36,17 +34,16 @@ public class Main {
                 twitter.retweetStatus(status.getId());
                 System.out.println(status.getText());
 
-                // Disable the code below to avoid excessive following
-
-//                if (!r.isSourceFollowingTarget()) {
-//                    try {
-//                        twitter.createFriendship(u.getId());
-//                        System.out.println("Now following " + u.getName());
-//                    }
-//                    catch (TwitterException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                // Follow verified users:
+                if (!r.isSourceFollowingTarget() && u.isVerified()) {
+                    try {
+                        twitter.createFriendship(u.getId());
+                        System.out.println("Now following " + u.getName());
+                    }
+                    catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Thread.sleep(2 * 60 * 1000);
             }
             catch (TwitterException e) {
@@ -106,5 +103,6 @@ public class Main {
 //                }
 //            }
 //        }
+
     }
 }
