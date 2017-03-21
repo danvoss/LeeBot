@@ -44,7 +44,7 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
-                Thread.sleep(2 * 60 * 1000);
+                Thread.sleep(1 * 60 * 1000);
             }
             catch (TwitterException e) {
                 if (e.getStatusCode() == 403) {
@@ -57,6 +57,9 @@ public class Main {
         }
 
         followBack(twitter);
+
+        // put on a timer?:
+        // unfollowNonfollowers(twitter);
 
         System.out.println("Finished.");
     }
@@ -103,6 +106,24 @@ public class Main {
 //                }
 //            }
 //        }
+    }
 
+    private static void unfollowNonfollowers(Twitter twitter) throws TwitterException {
+
+        PagableResponseList<User> listOfFriends = twitter.getFriendsList("lee_konitz_bot", -1);
+        String[] arrayOfFriends = new String[listOfFriends.size()];
+
+        int count=0;
+        for (User user : listOfFriends) {
+            arrayOfFriends[count] = user.getScreenName();
+            count++;
+        }
+        ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFriends);
+
+        for (Friendship friendship : listOfFriendships) {
+            if (!friendship.isFollowedBy() && !twitter.showUser(friendship.getId()).isVerified()) {
+                twitter.destroyFriendship(friendship.getId());
+            }
+        }
     }
 }
