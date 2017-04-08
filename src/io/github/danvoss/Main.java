@@ -2,8 +2,6 @@ package io.github.danvoss;
 
 import twitter4j.*;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +62,6 @@ public class Main {
 
     private static void followBack(Twitter twitter, long LEEBOT_ID) throws TwitterException {
 
-        // Replace commented-out code below with the following. Use pagable response list of followers instead of IDs to
-        // avoid query limit exception.
-
         PagableResponseList<User> listOfFollowers = twitter.getFollowersList(LEEBOT_ID, -1);
         String[] arrayOfFollowers = new String[listOfFollowers.size()];
 
@@ -90,86 +85,32 @@ public class Main {
             }
         }
         System.out.println("Done following back.");
-
-//        IDs followers = twitter.getFollowersIDs("lee_konitz_bot", -1);
-//        long[] followerIDs = followers.getIDs();
-//        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(followerIDs);
-//        for (Friendship f : friendshipResponseList) {
-//            if (!f.isFollowing()) {
-//                try {
-//                    twitter.createFriendship(f.getId());
-//                    System.out.println("Now following back " + f.getName());
-//                }
-//                catch (TwitterException e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
     }
 
     private static void unfollowNonfollowers(Twitter twitter, long LEEBOT_ID) throws TwitterException {
 
-        if (LocalDateTime.now().getDayOfWeek() == DayOfWeek.FRIDAY) {
+        PagableResponseList<User> listOfFriends = twitter.getFriendsList(LEEBOT_ID, -1);
+        String[] arrayOfFriends = new String[listOfFriends.size()];
 
-            long cursor = -1;
-            PagableResponseList<User> listOfFriends;
-            List<User> friendsArrayList = new ArrayList<>();
-            while (cursor!= 0) {
+        int count = 0;
+        for (User user : listOfFriends) {
+            arrayOfFriends[count] = user.getScreenName();
+            count++;
+        }
+
+        ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFriends);
+
+        for (Friendship friendship : listOfFriendships) {
+            if (!friendship.isFollowedBy() && !twitter.showUser(friendship.getId()).isVerified()) {
                 try {
-                    listOfFriends = twitter.getFriendsList(LEEBOT_ID, cursor);
-                    friendsArrayList.addAll(listOfFriends);
-                    cursor = listOfFriends.getNextCursor();
+                    twitter.destroyFriendship(friendship.getId());
+                    System.out.println("Unfollowed " + friendship.getName());
                 }
                 catch (TwitterException e) {
                     e.printStackTrace();
                 }
             }
-
-            // Loop over ArrayList instead of ResponseList (code below) because the latter is not cursorable and overruns query
-            // limit.
-            for (User u : friendsArrayList) {
-                Relationship r = twitter.showFriendship(LEEBOT_ID, u.getId());
-                if (!r.isSourceFollowedByTarget() && !u.isVerified()) {
-                    try {
-                        ResponseList<Friendship> friendshipResponseList = twitter.lookupFriendships(u.getId());
-                        for (Friendship f : friendshipResponseList) {
-                            try {
-                                twitter.destroyFriendship(f.getId());
-                            }
-                            catch (TwitterException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    catch (TwitterException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            System.out.println("Done unfollowing non-followers.");
-
-//            String[] arrayOfFriends = new String[friendsArrayList.size()];
-//
-//            int count = 0;
-//            for (User user : friendsArrayList) {
-//                arrayOfFriends[count] = user.getScreenName();
-//                count++;
-//            }
-
-//            ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFriends);
-//
-//            for (Friendship friendship : listOfFriendships) {
-//                if (!friendship.isFollowedBy() && !twitter.showUser(friendship.getId()).isVerified()) {
-//                    try {
-//                        twitter.destroyFriendship(friendship.getId());
-//                        System.out.println("Unfollowed " + friendship.getName());
-//                    }
-//                    catch (TwitterException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            System.out.println("Done unfollowing non-followers.");
         }
+        System.out.println("Done unfollowing non-followers.");
     }
 }
