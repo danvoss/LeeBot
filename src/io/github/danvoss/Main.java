@@ -2,6 +2,8 @@ package io.github.danvoss;
 
 import twitter4j.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,28 +91,30 @@ public class Main {
 
     private static void unfollowNonfollowers(Twitter twitter, long LEEBOT_ID) throws TwitterException {
 
-        PagableResponseList<User> listOfFriends = twitter.getFriendsList(LEEBOT_ID, -1);
-        String[] arrayOfFriends = new String[listOfFriends.size()];
+        if (LocalDateTime.now().getDayOfWeek() == DayOfWeek.FRIDAY) {
 
-        int count = 0;
-        for (User user : listOfFriends) {
-            arrayOfFriends[count] = user.getScreenName();
-            count++;
-        }
+            PagableResponseList<User> listOfFriends = twitter.getFriendsList(LEEBOT_ID, -1);
+            String[] arrayOfFriends = new String[listOfFriends.size()];
 
-        ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFriends);
+            int count = 0;
+            for (User user : listOfFriends) {
+                arrayOfFriends[count] = user.getScreenName();
+                count++;
+            }
 
-        for (Friendship friendship : listOfFriendships) {
-            if (!friendship.isFollowedBy() && !twitter.showUser(friendship.getId()).isVerified()) {
-                try {
-                    twitter.destroyFriendship(friendship.getId());
-                    System.out.println("Unfollowed " + friendship.getName());
-                }
-                catch (TwitterException e) {
-                    e.printStackTrace();
+            ResponseList<Friendship> listOfFriendships = twitter.lookupFriendships(arrayOfFriends);
+
+            for (Friendship friendship : listOfFriendships) {
+                if (!friendship.isFollowedBy() && !twitter.showUser(friendship.getId()).isVerified()) {
+                    try {
+                        twitter.destroyFriendship(friendship.getId());
+                        System.out.println("Unfollowed " + friendship.getName());
+                    } catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            System.out.println("Done unfollowing non-followers.");
         }
-        System.out.println("Done unfollowing non-followers.");
     }
 }
